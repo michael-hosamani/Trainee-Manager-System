@@ -68,6 +68,6 @@ public class TraineesController: ControllerBase
         {
             return NotFound(new { message = "Invalid Trainee Data"});
         }
-        return Ok(new { message = "Trainee Deleted Successfully" });
+        return NoContent();
     }
 }
