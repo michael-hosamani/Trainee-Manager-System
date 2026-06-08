@@ -34,7 +34,7 @@ public class TraineesController: ControllerBase
     {
         // GET /api/trainees/{id}
         Task<Trainee?> trainee = service.GetTraineeById(id);
-        if(trainee == null)
+        if(trainee.Result == null)
         {
             return NotFound(new { message = "Trainee not found" });
         }
