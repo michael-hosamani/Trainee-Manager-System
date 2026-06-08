@@ -48,10 +48,7 @@ public class TraineesController: ControllerBase
         // POST /api/trainees
         Task<TraineeResponse> traineeResponse = service.CreateTrainee(trainee);
 
-        return Ok( new
-        {
-            newTrainee = traineeResponse.Result
-        });
+        return Ok(traineeResponse.Result);
     }
 
     [HttpPut("{id}")]
@@ -79,16 +76,5 @@ public class TraineesController: ControllerBase
         }
         return NoContent();
     }
-
-    // [HttpGet]
-    // public ActionResult SearchTrainees(string search)
-    // {
-    //     var result = service.SearchTrainees(search);
-
-    //     return Ok(new
-    //     {
-    //         result
-    //     });
-    // }
 }
 
