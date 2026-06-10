@@ -16,7 +16,9 @@ run `dotnet run` in the root of the project directory
 - DELETE /api/trainees/{id}
 
 ## Sample Request JSON 
+
 Sample POST /api/trainees request: 
+```javascript
 { 
   "firstName": "john", 
   "lastName": "joe", 
@@ -24,21 +26,27 @@ Sample POST /api/trainees request:
   "techStack": "HTML, CSS, JavaScript", 
   "status": "Active"
 } 
+```
 
 Sample PUT /api/trainees/1 request: 
+```javascript
 {  
   "status": "InActive"
 } 
+```
 
 ## Sample Response JSON
 Sample GET /api/health response:
+```javascript
 {
   "status": "running",
   "application": "Trainee Management App",
   "timestamp": "2026-06-08T11:10:34.0036979+00:00"
 }
+```
 
 Sample GET /api/trainees response: 
+```javascript
 [
   {
     "id": 1,
@@ -51,8 +59,10 @@ Sample GET /api/trainees response:
     "updatedDate": "2026-06-08T10:55:05.7294876+00:00"
   }
 ]
+```
 
 Sample POST /api/trainees response: 
+```javascript
 {
   "newTrainee": {
     "id": 1,
@@ -65,8 +75,10 @@ Sample POST /api/trainees response:
     "updatedDate": "2026-06-08T10:55:05.7294876+00:00"
   }
 }
+```
 
 Sample GET /api/trainees/{id} response: 
+```javascript
 {
   "id": 1,
   "firstName": "john",
@@ -77,8 +89,10 @@ Sample GET /api/trainees/{id} response:
   "createdDate": "2026-06-08T10:55:05.7288647+00:00",
   "updatedDate": "2026-06-08T10:55:05.7294876+00:00"
 }
+```
 
-Sample PUT /api/trainees/{id} response: 
+Sample PUT /api/trainees/{id} response:
+```javascript
 {
   "id": 1,
   "firstName": "john",
@@ -89,6 +103,7 @@ Sample PUT /api/trainees/{id} response:
   "createdDate": "2026-06-08T10:55:05.7288647+00:00",
   "updatedDate": "2026-06-08T10:57:22.9859447+00:00"
 }
+```
 
 ## Known Limitations 
 - Absense of Authentication
