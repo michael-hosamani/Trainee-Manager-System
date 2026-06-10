@@ -31,6 +31,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 var jwtSecret = builder.Configuration["Jwt:Key"];
 
 builder.Services.AddScoped<ITraineeService, TraineeService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 
 // builder.Services
 //     .AddAuthentication(options =>

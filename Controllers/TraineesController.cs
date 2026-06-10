@@ -1,9 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
 using TraineeManagementApi.Helpers;
 
+namespace TraineeManagementApi.Controllers;
+
 [ApiController]
 [Route("api/[controller]")]
-
 public class TraineesController: ControllerBase
 {
     private ITraineeService service;

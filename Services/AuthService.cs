@@ -1,54 +1,77 @@
-// using System.IdentityModel.Tokens.Jwt;
-// using System.Security.Claims;
-// using Microsoft.IdentityModel.Tokens;
-// using Microsoft.AspNetCore.Identity;
-// using TraineeManagementApi.Dto;
+using System.Text;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using TraineeManagementApi.Dto;
+using System.Security.Claims;
+using System.IdentityModel.Tokens.Jwt;
+using Microsoft.IdentityModel.Tokens;
 
-// namespace TraineeManagementApi.Services;
+namespace TraineeManagementApi.Services;
 
-// public class AuthService: IAuthService
-// {
-//     private readonly AppDbContext _db;
+public class AuthService: IAuthService
+{
+    private readonly AppDbContext _db;
+    private readonly IConfiguration _configuration;
 
-//     public AuthService(AppDbContext db)
-//     {   
-//         _db = db;
-//     }
+    public AuthService(AppDbContext db, IConfiguration configuration)
+    {   
+        _db = db;
+        _configuration = configuration;
+    }
 
-//     public async Task<LoginResponse?> Login(LoginRequest loginRequest)
-//     {
-//         var checkUser = _db.Users.SingleOrDefaultAsync(u => u.Username == loginRequest.Username);
-//         if (checkUser == null)
-//         {
-//             return null;
-//         }
+    public LoginResponse? UserLogin(LoginRequest loginRequest)
+    {
+        var user = _db.Users.Where(u => u.Username == loginRequest.Username).FirstOrDefault();
 
-//         var hasher = new PasswordHasher<User>();
-//         var isCorrectPassword = hasher.VerifyHashedPassword(checkUser, checkUser.PasswordHash, loginRequest.Password);
-//         if(isCorrectPassword == PasswordVerificationResult.Failed)
-//         {
-//             return null;
-//         }
+        if (user == null)
+        {
+            return null;
+        }
+  
+        var hasher = new PasswordHasher<User>();
+        var isCorrectPassword = hasher.VerifyHashedPassword(user, user.PasswordHash, loginRequest.Password);
+        if(isCorrectPassword == PasswordVerificationResult.Failed)
+        {
+            return null;
+        }
+        
+        var claims = new[]
+        {
+            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),  
+            new Claim(ClaimTypes.Name, user.Username), 
+            new Claim(ClaimTypes.Role, user.Role.ToString())
+        };
 
-//         var claims = new[]
-//         {
-//             new Claim(JwtRegisteredClaimNames.Sub, checkUser.Id),
-//             new Claim(JwtRegisteredClaimNames.Sub, checkUser.Username),
-//             new Claim(ClaimTypes.Role, checkUser.Role)
-//         };
+        var key = _configuration["Jwt:Key"];
+        if(key == null)
+        {
+            return null;
+        }
 
-//         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret));
-//         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+        var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));
+        var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
-//         var token = new JwtSecurityToken(
-//             issuer: "MyApp",
-//             audience: "MyAppUsers",
-//             claims: claims,
-//             expires: DateTime.UtcNow.AddHours(1),
-//             signingCredentials: creds
-//         );
+        var token = new JwtSecurityToken(
+            issuer: "TraineeManagementApi",
+            audience: "TraineeManagementClient",
+            claims: claims,
+            expires: DateTime.UtcNow.AddHours(1),
+            signingCredentials: credentials
+        );
+        var jwt = new JwtSecurityTokenHandler().WriteToken(token);
+        // var token = _jwtService.GenerateToken(checkUser.Username);
+        // return Ok(new {Token = token });
+        var handler = new JwtSecurityTokenHandler();
 
-//         var jwt = new JwtSecurityTokenHandler().WriteToken(token);
-//         return jwt;
-//     }
-// }
+        // Read the token without validating signature
+        var expiryDate = handler.ReadJwtToken(jwt).ValidTo;
+        Console.WriteLine("type of token: " + token.GetType());
+        Console.WriteLine("token: " + expiryDate);
+        return new LoginResponse
+        {
+            User = user,
+            Token = jwt,
+            ExpiresIn = expiryDate
+        };
+    }
+}
