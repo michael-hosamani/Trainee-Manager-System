@@ -7,7 +7,7 @@ using TraineeManagementApi.Dto;
 
 namespace TraineeManagementApi.Contollers;
 
-// [Authorize]
+[Authorize]
 [ApiController]
 [Route("api/task-assignments")]
 public class TaskAssignmentController: ControllerBase 
