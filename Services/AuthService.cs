@@ -110,7 +110,7 @@ public class AuthService: IAuthService
             return null;
         }
 
-        if(user.RefreshTokenExpiry >= DateTime.UtcNow)
+        if(user.RefreshTokenExpiry <= DateTime.UtcNow)
         {
             _logger.LogError("Refresh token has expired");
             return null;

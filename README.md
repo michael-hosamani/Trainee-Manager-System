@@ -21,16 +21,22 @@ Asp.net core and MySql
   `dotnet run`
 
 ## MySQL setup steps
-- First import required packages and make sure all the packages are of the same version so that we do not get any version mismatch error.
-- Update the Program.cs file for using the MySql database instead of In-memory datase.
-- In appsettings.json add another entry for Connection string like this:
-  "ConnectionStrings": {
-    "DefaultConnection": "server=localhost;port=3306;database=trainee_management_db;user=root;password=root;"
-  },
-- Run dotnet build to make sure there are no errors.
-- Run the migration command => dotnet ef migrations add InitialCreate
-- Once the migration is completed run this command to make tables in the database => dotnet ef database update
-- Once ran successfully, the code and the database are in sync. We can test the connection by using swagger UI, try adding one entry using POST end point and see if it is shown in the datase or not.
+1. Initialise User Secrets
+  `dotnet user-secrets init`
+
+2. Add Database connection string
+  `dotnet user-secrets set "ConnectionStrings:DefaultConnection" "Your-Database-Connection-String"`
+
+3. Run the following command to view you secret
+  `dotnet user-secrets list`
+
+4. Run the following command to make sure there are no errors.
+  `dotnet build`
+
+5. Run the following command to create tables in the database 
+  `dotnet ef database update`
+
+Once ran successfully, the code and the database are in sync. We can test the connection by using swagger UI, try adding one entry using POST end point and see if it is shown in the datase or not.
 
 ## Login credentials for testing
 ``` javascript
@@ -41,7 +47,17 @@ Asp.net core and MySql
 ```
 
 ## JWT usage instructions
-- In appsetting.json and appsetting.Development.json enter appropriate key, issuer, audience, and expiry
+1. Initialise User Secrets
+  `dotnet user-secrets init`
+
+2. Add Jwt Key to secrets
+  `dotnet user-secrets set "Jwt:Key" "Your-Jwt-Key"`
+
+3. Run the following command to view you secret
+  `dotnet user-secrets list`
+
+4. Run the following command to make sure there are no errors.
+  `dotnet build`
 
 ## API List
 - GET /api/health
