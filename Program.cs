@@ -100,6 +100,9 @@ builder.Services.AddAuthorization();
 builder.Logging.AddConsole();     
 builder.Logging.AddDebug();
 
+builder.Services.AddProblemDetails();
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+
 var app = builder.Build();
 
 // This seeds the database by creating one user in the User table
@@ -134,24 +137,25 @@ app.UseCors("AllowSpecificOrigin");
 
 app.MapGet("/", () => "Hello World!");
 
+app.UseExceptionHandler();
 
 app.UseOpenApi();
 app.UseSwaggerUi();
 
-app.UseExceptionHandler(options =>
-{
-   options.Run(async context =>
-   {
-      context.Response.StatusCode = StatusCodes.Status500InternalServerError;
-      context.Response.ContentType = "application/json";
+// app.UseExceptionHandler(options =>
+// {
+//    options.Run(async context =>
+//    {
+//       context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+//       context.Response.ContentType = "application/json";
 
-      var exceptionFeature = context.Features.Get<IExceptionHandlerFeature>();
-      if (exceptionFeature is not null)
-      {
-         var error = new { message = "An unexpected error occurred" };
-         await context.Response.WriteAsJsonAsync(error);
-      }
-   });
-});
+//       var exceptionFeature = context.Features.Get<IExceptionHandlerFeature>();
+//       if (exceptionFeature is not null)
+//       {
+//          var error = new { message = "An unexpected error occurred" };
+//          await context.Response.WriteAsJsonAsync(error);
+//       }
+//    });
+// });
 
 app.Run();

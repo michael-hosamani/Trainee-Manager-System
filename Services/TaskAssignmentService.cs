@@ -50,7 +50,8 @@ public class TaskAssignmentService: ITaskAssignmentService
         if(findTrainee == null)
         {
             _logger.LogWarning("Trainee not found with {id}", taskAssignment.TraineeId);
-            return null;
+            throw new NotFoundException("Trainee not found", taskAssignment.TraineeId);
+            // return null;
         }
 
         Mentor? findMentor = await _db.Mentors.SingleOrDefaultAsync(t => t.Id == taskAssignment.MentorId);
