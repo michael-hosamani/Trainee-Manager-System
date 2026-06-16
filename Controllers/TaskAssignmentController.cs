@@ -5,9 +5,9 @@ using TraineeManagementApi.Models;
 using TraineeManagementApi.Services;
 using TraineeManagementApi.Dto;
 
-namespace TraineeManagementApi.Contollers;
+namespace TraineeManagementApi.Controllers;
 
-[Authorize(Roles = "Admin, Mentor, Trainee")]
+[Authorize(Roles = $"{nameof(Role.Admin)}, {nameof(Role.Mentor)}, {nameof(Role.Trainee)}")]
 [ApiController]
 [Route("api/task-assignments")]
 public class TaskAssignmentController: ControllerBase 

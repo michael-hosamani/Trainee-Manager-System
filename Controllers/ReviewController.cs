@@ -5,11 +5,11 @@ using TraineeManagementApi.Models;
 using TraineeManagementApi.Services;
 using TraineeManagementApi.Dto;
 
-namespace TraineeManagementApi.Contollers;
+namespace TraineeManagementApi.Controllers;
 
-[Authorize(Roles = "Mentor, Trainee")]
+[Authorize(Roles = $"{nameof(Role.Mentor)}, {nameof(Role.Trainee)}")]
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/reviews")]
 public class ReviewsController: ControllerBase 
 {
     private IReviewService _service;

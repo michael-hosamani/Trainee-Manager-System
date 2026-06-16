@@ -5,11 +5,11 @@ using TraineeManagementApi.Models;
 using TraineeManagementApi.Services;
 using TraineeManagementApi.Dto;
 
-namespace TraineeManagementApi.Contollers;
+namespace TraineeManagementApi.Controllers;
 
-[Authorize(Roles = "Admin")]
+[Authorize(Roles = nameof(Role.Admin))]
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/mentors")]
 public class MentorsController: ControllerBase 
 {
     private IMentorService _service;

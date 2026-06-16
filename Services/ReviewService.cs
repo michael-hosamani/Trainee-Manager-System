@@ -11,9 +11,9 @@ namespace TraineeManagementApi.Services;
 public class ReviewService: IReviewService 
 {
     private readonly AppDbContext _db;
-    private readonly ILogger<TraineeService> _logger;
+    private readonly ILogger<ReviewService> _logger;
 
-    public ReviewService(AppDbContext db, ILogger<TraineeService> logger){
+    public ReviewService(AppDbContext db, ILogger<ReviewService> logger){
         _db = db;
         _logger = logger;
     }
@@ -30,7 +30,7 @@ public class ReviewService: IReviewService
         var result = await _db.Reviews.SingleOrDefaultAsync(t => t.Id == id);
         if(result == null)
         {
-            _logger.LogError("Review not found");
+            _logger.LogWarning("Review not found with {id}", id);
             return null;
         }
         return result;
@@ -42,14 +42,14 @@ public class ReviewService: IReviewService
         Submission? findSubmission = await _db.Submissions.SingleOrDefaultAsync(t => t.Id == review.SubmissionId);
         if(findSubmission == null)
         {
-            _logger.LogError("Submission not found");
+            _logger.LogWarning("Submission not found with {id}", review.SubmissionId);
             return null;
         }
 
         Mentor? findMentor = await _db.Mentors.SingleOrDefaultAsync(t => t.Id == review.MentorId);
         if(findMentor == null)
         {
-            _logger.LogError("Mentor not found");
+            _logger.LogWarning("Mentor not found with {id}", review.MentorId);
             return null;
         }
 

@@ -7,9 +7,9 @@ using TraineeManagementApi.Dto;
 
 namespace TraineeManagementApi.Controllers;
 
-[Authorize(Roles = "Admin")]
+[Authorize(Roles = nameof(Role.Admin))]
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/trainees")]
 public class TraineesController: ControllerBase
 {
     private ITraineeService service;
@@ -20,6 +20,34 @@ public class TraineesController: ControllerBase
     }
     
     // GET /api/trainees
+    /*
+        This route fetchs and return all the Trainees
+        Returns the following response:
+        [
+            {
+                "id": 7,
+                "firstName": "john",
+                "lastName": "doe",
+                "email": "john.doe@example.com",
+                "techStack": "string",
+                "status": "Inactive",
+                "createdDate": "2026-06-11T09:47:43.250425",
+                "updatedDate": "2026-06-11T09:47:43.250453",
+                "taskAssignments": []
+            },
+            {
+                "id": 8,
+                "firstName": "user",
+                "lastName": "dummy",
+                "email": "user@example.com",
+                "techStack": "string",
+                "status": "Active",
+                "createdDate": "2026-06-11T10:49:07.88049",
+                "updatedDate": "2026-06-11T10:49:07.880508",
+                "taskAssignments": []
+            }
+        ]
+    */
     [HttpGet]
     public async Task<ActionResult> GetAllTrainees(string? search,[FromQuery] PaginationParams paginationParams, Status? status)
     {

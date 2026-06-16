@@ -11,9 +11,9 @@ namespace TraineeManagementApi.Services;
 public class LearningTaskService: ILearningTaskService 
 {
     private readonly AppDbContext _db;
-    private readonly ILogger<TraineeService> _logger;
+    private readonly ILogger<LearningTaskService> _logger;
 
-    public LearningTaskService(AppDbContext db, ILogger<TraineeService> logger){
+    public LearningTaskService(AppDbContext db, ILogger<LearningTaskService> logger){
         _db = db;
         _logger = logger;
     }
@@ -38,7 +38,7 @@ public class LearningTaskService: ILearningTaskService
                                 .SingleOrDefaultAsync(t => t.Id == id);
         if(result == null)
         {
-            _logger.LogError("LearningTask not found");
+            _logger.LogWarning("Learning Task not found with {id}", id);
             return null;
         }
         return result;
@@ -83,7 +83,7 @@ public class LearningTaskService: ILearningTaskService
         var findLearningTask = await _db.LearningTasks.SingleOrDefaultAsync(t => t.Id == id);
         if(findLearningTask == null)
         {
-            _logger.LogError("LearningTask not found");
+            _logger.LogWarning("Learning Task not found with {id}", id);
             return null;
         }
 
@@ -117,14 +117,14 @@ public class LearningTaskService: ILearningTaskService
         var learningTask = await _db.LearningTasks.SingleOrDefaultAsync(t => t.Id == id);
         if(learningTask == null)
         {
-            _logger.LogError("LearningTask not found");
+            _logger.LogWarning("Learning Task not found with {id}", id);
             return false;
         }
 
         _db.LearningTasks.Remove(learningTask);
         await _db.SaveChangesAsync();
 
-        _logger.LogInformation("LearningTask deletd successfully");
+        _logger.LogInformation("LearningTask deleted successfully");
 
         return true;
     }

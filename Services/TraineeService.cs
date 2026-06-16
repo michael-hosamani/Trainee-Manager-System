@@ -28,7 +28,7 @@ public class TraineeService(ILogger<TraineeService> logger, AppDbContext db) : I
                                 .SingleOrDefaultAsync(t => t.Id == id);
         if(result == null)
         {
-            _logger.LogError("Trainee not found");
+            _logger.LogWarning("Trainee not found with {id}", id);
             return null;
         }
 
@@ -74,7 +74,7 @@ public class TraineeService(ILogger<TraineeService> logger, AppDbContext db) : I
         var findTrainee = await _db.Trainees.SingleOrDefaultAsync(t => t.Id == id);
         if(findTrainee == null)
         {
-            _logger.LogError("Trainee not found");
+            _logger.LogWarning("Trainee not found with {id}", id);
             return null;
         }
 
@@ -108,14 +108,14 @@ public class TraineeService(ILogger<TraineeService> logger, AppDbContext db) : I
         var trainee = await _db.Trainees.SingleOrDefaultAsync(t => t.Id == id);
         if(trainee == null)
         {
-            _logger.LogError("Trainee not found");
+            _logger.LogWarning("Trainee not found with {id}", id);
             return false;
         }
 
         _db.Trainees.Remove(trainee);
         await _db.SaveChangesAsync();
 
-        _logger.LogInformation("Trainee deletd successfully");
+        _logger.LogInformation("Trainee deleted successfully");
 
         return true;
     }
@@ -130,7 +130,6 @@ public class TraineeService(ILogger<TraineeService> logger, AppDbContext db) : I
                 t.Email.Contains(search) ||
                 t.TechStack.Contains(search)
         );
-        await _db.SaveChangesAsync();
 
         return result;
     }

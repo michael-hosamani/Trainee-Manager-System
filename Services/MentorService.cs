@@ -11,9 +11,9 @@ namespace TraineeManagementApi.Services;
 public class MentorService: IMentorService 
 {
     private readonly AppDbContext _db;
-    private readonly ILogger<TraineeService> _logger;
+    private readonly ILogger<MentorService> _logger;
 
-    public MentorService(AppDbContext db, ILogger<TraineeService> logger){
+    public MentorService(AppDbContext db, ILogger<MentorService> logger){
         _db = db;
         _logger = logger;
     }
@@ -38,7 +38,7 @@ public class MentorService: IMentorService
                                 .SingleOrDefaultAsync(t => t.Id == id);
         if(result == null)
         {
-            _logger.LogError("Mentor not found");
+            _logger.LogWarning("Mentor not found with {id}", id);
             return null;
         }
 
@@ -81,10 +81,10 @@ public class MentorService: IMentorService
     // This function fetches the Mentor based on its Id and updates certain fields entered through the body
     public async Task<Mentor?> UpdateMentorDetails(int id, UpdateMentorRequest mentor)
     {
-        var findMentor = await _db.Mentors.SingleOrDefaultAsync(t => t.Id == id);
+        Mentor? findMentor = await _db.Mentors.SingleOrDefaultAsync(t => t.Id == id);
         if(findMentor == null)
         {
-            _logger.LogError("Mentor not found");
+            _logger.LogWarning("Mentor not found with {id}", id);
             return null;
         }
 
@@ -115,17 +115,17 @@ public class MentorService: IMentorService
     // This function fetches by Id and deletes a Mentor
     public async Task<bool> DeleteMentorDetails(int id)
     {
-        var Mentor = await _db.Mentors.SingleOrDefaultAsync(t => t.Id == id);
+        Mentor? Mentor = await _db.Mentors.SingleOrDefaultAsync(t => t.Id == id);
         if(Mentor == null)
         {
-            _logger.LogError("Mentor not found");
+            _logger.LogWarning("Mentor not found with {id}", id);
             return false;
         }
 
         _db.Mentors.Remove(Mentor);
         await _db.SaveChangesAsync();
 
-        _logger.LogInformation("Mentor deletd successfully");
+        _logger.LogInformation("Mentor deleted successfully");
 
         return true;
     }

@@ -11,9 +11,9 @@ namespace TraineeManagementApi.Services;
 public class SubmissionService: ISubmissionService 
 {
     private readonly AppDbContext _db;
-    private readonly ILogger<TraineeService> _logger;
+    private readonly ILogger<SubmissionService> _logger;
 
-    public SubmissionService(AppDbContext db, ILogger<TraineeService> logger){
+    public SubmissionService(AppDbContext db, ILogger<SubmissionService> logger){
         _db = db;
         _logger = logger;
     }
@@ -34,7 +34,7 @@ public class SubmissionService: ISubmissionService
                                 .SingleOrDefaultAsync(t => t.Id == id);
         if(result == null)
         {
-            _logger.LogError("Submission not found");
+            _logger.LogWarning("Submissoin not found with {id}", id);
             return null;
         }
         return result;
@@ -46,7 +46,7 @@ public class SubmissionService: ISubmissionService
         TaskAssignment? findTaskAssignment = await _db.TaskAssignments.SingleOrDefaultAsync(t => t.Id == submission.TaskAssignmentId);
         if(findTaskAssignment == null)
         {
-            _logger.LogError("Task assignment not found");
+            _logger.LogWarning("Task ASsignment not found with {id}", submission.TaskAssignmentId);
             return null;
         }
         Submission newSubmission = new Submission

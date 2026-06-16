@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace TraineeManagementApi.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/health")]
 public class HealthController: ControllerBase
 {
     // GET /api/health route

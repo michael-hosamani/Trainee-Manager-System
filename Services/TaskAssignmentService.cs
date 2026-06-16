@@ -12,9 +12,9 @@ namespace TraineeManagementApi.Services;
 public class TaskAssignmentService: ITaskAssignmentService 
 {
     private readonly AppDbContext _db;
-    private readonly ILogger<TraineeService> _logger;
+    private readonly ILogger<TaskAssignmentService> _logger;
 
-    public TaskAssignmentService(AppDbContext db, ILogger<TraineeService> logger){
+    public TaskAssignmentService(AppDbContext db, ILogger<TaskAssignmentService> logger){
         _db = db;
         _logger = logger;
     }
@@ -37,7 +37,7 @@ public class TaskAssignmentService: ITaskAssignmentService
                                     .SingleOrDefaultAsync(t => t.Id == id);
         if(result == null)
         {
-            _logger.LogError("TaskAssignment not found");
+            _logger.LogWarning("Task Assignment not found with {id}", id);
             return null;
         }
         return result;
@@ -49,21 +49,21 @@ public class TaskAssignmentService: ITaskAssignmentService
         Trainee? findTrainee = await _db.Trainees.SingleOrDefaultAsync(t => t.Id == taskAssignment.TraineeId);
         if(findTrainee == null)
         {
-            _logger.LogError("Trainee not found");
+            _logger.LogWarning("Trainee not found with {id}", taskAssignment.TraineeId);
             return null;
         }
 
         Mentor? findMentor = await _db.Mentors.SingleOrDefaultAsync(t => t.Id == taskAssignment.MentorId);
         if(findMentor == null)
         {
-            _logger.LogError("Mentor not found");
+            _logger.LogWarning("Mentor not found with {id}", taskAssignment.MentorId);
             return null;
         }
 
         LearningTask? findLearningTask = await _db.LearningTasks.SingleOrDefaultAsync(t => t.Id == taskAssignment.LearningTaskId);
         if(findLearningTask == null)
         {
-            _logger.LogError("Learning task not found");
+            _logger.LogWarning("Learning Task not found with {id}", taskAssignment.LearningTaskId);
             return null;
         }
 
@@ -104,7 +104,7 @@ public class TaskAssignmentService: ITaskAssignmentService
         var findTaskAssignment = await _db.TaskAssignments.SingleOrDefaultAsync(t => t.Id == id);
         if(findTaskAssignment == null)
         {
-            _logger.LogError("TaskAssignment not found");
+            _logger.LogWarning("Task Assignment not found with {id}", id);
             return null;
         }
 
