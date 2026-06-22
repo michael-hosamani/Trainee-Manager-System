@@ -13,10 +13,12 @@ public class TaskAssignmentService: ITaskAssignmentService
 {
     private readonly AppDbContext _db;
     private readonly ILogger<TaskAssignmentService> _logger;
+    private readonly IRedisCacheService _redisCacheService;
 
-    public TaskAssignmentService(AppDbContext db, ILogger<TaskAssignmentService> logger){
+    public TaskAssignmentService(AppDbContext db, ILogger<TaskAssignmentService> logger, IRedisCacheService redisCacheService){
         _db = db;
         _logger = logger;
+        _redisCacheService = redisCacheService;
     }
 
     // This function returns the list of all the TaskAssignments
@@ -31,7 +33,14 @@ public class TaskAssignmentService: ITaskAssignmentService
     // This function fetches a TaskAssignment based on its Id
     public async Task<TaskAssignment?> GetTaskAssignmentById(int id)
     {
-        var result = await _db.TaskAssignments
+        string key = $"taskAssignment:{id}";
+        TaskAssignment? data = await _redisCacheService.GetAsync<TaskAssignment>(key);
+        if(data != null)
+        {
+            return data;
+        }
+
+        TaskAssignment result = await _db.TaskAssignments
                                     .Include(t => t.Submissions)
                                         .ThenInclude(s => s.Reviews)
                                     .SingleOrDefaultAsync(t => t.Id == id);
@@ -40,6 +49,7 @@ public class TaskAssignmentService: ITaskAssignmentService
             _logger.LogWarning("Task Assignment not found with {id}", id);
             return null;
         }
+        _redisCacheService.SetAsync(key, result, TimeSpan.FromMinutes(30));
         return result;
     }  
 
@@ -113,6 +123,9 @@ public class TaskAssignmentService: ITaskAssignmentService
             findTaskAssignment.Status = updateTaskAssignmentRequest.Status.Value;
 
         await _db.SaveChangesAsync();
+        string key = $"taskAssignment:{id}";
+        _redisCacheService.RemoveAsync(key);
+        _redisCacheService.SetAsync(key, findTaskAssignment, TimeSpan.FromMinutes(30));
 
         _logger.LogInformation("TaskAssignment updated successfully");
 

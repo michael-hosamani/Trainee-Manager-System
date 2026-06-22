@@ -1,0 +1,12 @@
+services:
+  redis:
+    image: docker-registry-002.zeuslearning.com/zeuslearning/redis
+    container_name: redis
+    ports:
+      - "6379:6379"
+    command: redis-server --requirepass redispass --appendonly yes
+    volumes:
+      - redis-data:/data
+
+volumes:
+  redis-data:

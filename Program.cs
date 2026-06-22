@@ -60,7 +60,12 @@ builder.Services.AddOpenApiDocument(config =>
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
  
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+   options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+   options.Configuration = builder.Configuration.GetConnectionString("Redis");
+});
 
 builder.Services.AddScoped<ITraineeService, TraineeService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
@@ -72,6 +77,7 @@ builder.Services.AddScoped<IReviewService, ReviewService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IFileStorageService, FileStorageService>();
 builder.Services.AddScoped<ISubmissionFileService, SubmissionFileService>();
+builder.Services.AddScoped<IRedisCacheService, RedisCacheService>();
 
 builder.Services
     .AddAuthentication(options =>

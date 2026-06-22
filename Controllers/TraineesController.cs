@@ -7,7 +7,7 @@ using TraineeManagementApi.Dto;
 
 namespace TraineeManagementApi.Controllers;
 
-[Authorize(Roles = nameof(Role.Admin))]
+// [Authorize(Roles = nameof(Role.Admin))]
 [ApiController]
 [Route("api/trainees")]
 public class TraineesController: ControllerBase

@@ -5,13 +5,15 @@ using TraineeManagementApi.Helpers;
 using Microsoft.AspNetCore.Identity;
 using TraineeManagementApi.Models;
 using TraineeManagementApi.Dto;
+using System.Text.Json;
 
 namespace TraineeManagementApi.Services;
 
-public class TraineeService(ILogger<TraineeService> logger, AppDbContext db) : ITraineeService
+public class TraineeService(ILogger<TraineeService> logger, AppDbContext db, IRedisCacheService redisCacheService) : ITraineeService
 {
     private readonly AppDbContext _db = db;
     private readonly ILogger<TraineeService> _logger = logger;
+    private readonly IRedisCacheService _redisCacheService = redisCacheService;
 
     // This function returns the list of all the Trainees
     public async Task<List<Trainee>> GetAllTrainees()
@@ -22,6 +24,13 @@ public class TraineeService(ILogger<TraineeService> logger, AppDbContext db) : I
     // This function fetches a Trainee based on its Id
     public async Task<Trainee?> GetTraineeById(int id)
     {
+        string key = $"trainee:{id}";
+        Trainee? data = await _redisCacheService.GetAsync<Trainee>(key);
+        if(data != null)
+        {
+            return data;
+        }
+
         var result = await _db.Trainees
                                 .Include(t => t.TaskAssignments)
                                         .ThenInclude(t => t.Submissions)
@@ -31,6 +40,8 @@ public class TraineeService(ILogger<TraineeService> logger, AppDbContext db) : I
             _logger.LogWarning("Trainee not found with {id}", id);
             return null;
         }
+
+        _redisCacheService.SetAsync(key, result, TimeSpan.FromMinutes(30));
 
         return result;
     }
@@ -96,6 +107,8 @@ public class TraineeService(ILogger<TraineeService> logger, AppDbContext db) : I
         findTrainee.UpdatedDate = DateTime.Now;
 
         await _db.SaveChangesAsync();
+        _redisCacheService.RemoveAsync($"trainee:{id}");
+        _redisCacheService.SetAsync($"trainee:{id}", findTrainee, TimeSpan.FromMinutes(30));
 
         _logger.LogInformation("Trainee updated successfully");
 
@@ -114,6 +127,8 @@ public class TraineeService(ILogger<TraineeService> logger, AppDbContext db) : I
 
         _db.Trainees.Remove(trainee);
         await _db.SaveChangesAsync();
+
+        _redisCacheService.RemoveAsync($"trainee:{id}");
 
         _logger.LogInformation("Trainee deleted successfully");
 
