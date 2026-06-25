@@ -1,0 +1,6 @@
+@TraineeDirectory.Api_HostAddress = http://localhost:5190
+
+GET {{TraineeDirectory.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

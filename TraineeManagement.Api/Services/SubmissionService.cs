@@ -133,7 +133,7 @@ public class SubmissionService: ISubmissionService
         };
         await _db.ProcessingJobs.AddAsync(processingJob);
         await _db.SaveChangesAsync();
-        await _rabbitMQService.PublishAsync(submissionProcessingRequested);
+        await _rabbitMQService.PublishAsync(submissionProcessingRequested, cancellationToken);
         
         _logger.LogInformation("Submission file created successfully");
         return generatedPath;

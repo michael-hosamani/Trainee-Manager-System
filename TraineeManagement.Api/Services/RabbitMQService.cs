@@ -17,7 +17,7 @@ public class RabbitMQService: IRabbitMQService
         _logger = logger;
     }
 
-    public async Task PublishAsync(SubmissionProcessingRequested message)
+    public async Task PublishAsync(SubmissionProcessingRequested message, CancellationToken cancellationToken)
     {
         ConnectionFactory factory = new ConnectionFactory
         {
@@ -31,12 +31,46 @@ public class RabbitMQService: IRabbitMQService
         using var connection = await factory.CreateConnectionAsync();
         using var channel = await connection.CreateChannelAsync();
  
+        string queueName = _configuration["RabbitMQ:QueueName"];
+        var dlx = $"{queueName}-dlx";
+        var dlq = $"{queueName}-dlq";
+
+        await channel.ExchangeDeclareAsync(
+            exchange: dlx,
+            type: ExchangeType.Direct,
+            durable: true,
+            autoDelete: false, 
+            cancellationToken: cancellationToken
+        );
+
         await channel.QueueDeclareAsync(
-            queue: _configuration["RabbitMQ:QueueName"],
+            queue: dlq,
             durable: true,
             exclusive: false,
             autoDelete: false,
-            arguments: null
+            arguments: null,
+            cancellationToken: cancellationToken
+        );
+
+        await channel.QueueBindAsync(
+            queue: dlq,
+            exchange: dlx,
+            routingKey: dlq,
+            arguments: null,
+            cancellationToken: cancellationToken
+        );
+
+        await channel.QueueDeclareAsync(
+            queue: queueName,
+            durable: true,
+            exclusive: false,
+            autoDelete: false,
+            arguments: new Dictionary<string, object?>
+            {
+                { "x-dead-letter-exchange", dlx },
+                { "x-dead-letter-routing-key", dlq } 
+            },
+            cancellationToken: cancellationToken
         );
 
         var body = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(message));
