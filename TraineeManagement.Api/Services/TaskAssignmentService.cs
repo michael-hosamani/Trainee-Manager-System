@@ -125,8 +125,8 @@ public class TaskAssignmentService: ITaskAssignmentService
 
         await _db.SaveChangesAsync();
         string key = $"taskAssignment:{id}";
-        _redisCacheService.RemoveAsync(key, cancellationToken);
-        _redisCacheService.SetAsync(key, findTaskAssignment, TimeSpan.FromMinutes(30), cancellationToken);
+        await _redisCacheService.RemoveAsync(key, cancellationToken);
+        await _redisCacheService.SetAsync(key, findTaskAssignment, TimeSpan.FromMinutes(30), cancellationToken);
 
         _logger.LogInformation("TaskAssignment updated successfully");
 

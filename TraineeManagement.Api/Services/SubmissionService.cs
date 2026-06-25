@@ -7,6 +7,7 @@ using TraineeManagement.Api.Dto;
 using TraineeManagement.Api.Services;
 using System.Security.Cryptography;
 using Shared.Data;
+using System.Text.Json;
 
 namespace TraineeManagement.Api.Services;
 
@@ -126,9 +127,8 @@ public class SubmissionService: ISubmissionService
         ProcessingJob processingJob = new ()
         {
             status = ProcessingJobStatus.Queued,
-            Attempts = 1,
+            Attempts = 0,
             ErrorSummary = "",
-            StartedAt = DateTime.Now,
             CorrelationId = submissionProcessingRequested.CorrelationId  
         };
         await _db.ProcessingJobs.AddAsync(processingJob);
@@ -159,7 +159,7 @@ public class SubmissionService: ISubmissionService
             return null;
         }
 
-        _redisCacheService.SetAsync(key, result, TimeSpan.FromMinutes(30), cancellationToken);
+        await _redisCacheService.SetAsync(key, result, TimeSpan.FromMinutes(30), cancellationToken);
 
         return result;
     }
