@@ -16,15 +16,15 @@ public class SubmissionConsumer : BackgroundService
     private readonly IConfiguration _configuration;
     private readonly IServiceScopeFactory _serviceScopeFactory;
     private readonly ILogger<SubmissionConsumer> _logger;
-    private readonly HttpClient _clientFactory;
+    private readonly HttpClient _httpClient;
     private readonly int maxRetries = 3;
 
-    public SubmissionConsumer(IConfiguration configuration, IServiceScopeFactory serviceScopeFactory, ILogger<SubmissionConsumer> logger, HttpClient clientFactory)
+    public SubmissionConsumer(IConfiguration configuration, IServiceScopeFactory serviceScopeFactory, ILogger<SubmissionConsumer> logger, HttpClient httpClient)
     {
         _configuration = configuration;
         _serviceScopeFactory = serviceScopeFactory;
         _logger = logger;
-        _clientFactory = clientFactory;
+        _httpClient = httpClient;
     }
 
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
@@ -125,6 +125,12 @@ public class SubmissionConsumer : BackgroundService
                     _logger.LogWarning("Job Already Processed: {id}", job.Id);
                     return;
                 }
+                if(job.Attempts > maxRetries)
+                {
+                    await _channel.BasicAckAsync(ea.DeliveryTag, multiple: false);
+                    _logger.LogWarning("Job processing attempts exceeded max retries: {id}", job.Id);
+                    return;
+                }
 
                 UpdateStatus(res, ProcessingJobStatus.Processing);
                 Console.WriteLine("Started processing");
@@ -137,9 +143,9 @@ public class SubmissionConsumer : BackgroundService
                 }
                 Console.WriteLine("Checksum: " + file.Checksum);
 
-                var response = await _clientFactory.GetFromJsonAsync("api/trainees", new JsonSerializerOptions(JsonSerializerDefaults.Web));
+                DummyTrainee response = await _httpClient.GetFromJsonAsync<DummyTrainee>("api/trainees", new JsonSerializerOptions(JsonSerializerDefaults.Web));
 
-                Console.WriteLine("res: " + response);
+                Console.WriteLine("response: " + response.ToString());
 
                 await Task.Delay(TimeSpan.FromSeconds(3));
 
@@ -150,6 +156,7 @@ public class SubmissionConsumer : BackgroundService
             }
             catch(Exception ex)
             {
+                Console.WriteLine("in catch block");
                 using var scope = _serviceScopeFactory.CreateScope();
                 AppDbContext db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
                 
