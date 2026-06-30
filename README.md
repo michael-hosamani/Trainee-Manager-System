@@ -9,72 +9,72 @@ Asp.net core, MySql, Redis, RabbitMQ & Docker
 
 ## Backend setup steps
 
-  # TraineeManagement.Api
-  1. Navigate to the TraineeManagement.Api folder
-    From the root of the project run:
+  ### TraineeManagement.Api
+  1. Navigate to the TraineeManagement.Api folder  
+    From the root of the project run:  
     `cd TraineeManagement.Api`
 
-  2. Set up .env files
-    Run the following command and enter appropriate values for all the environment variables
+  2. Set up .env files  
+    Run the following command and enter appropriate values for all the environment variables  
     `cp .env.example .env `
 
-  3. Restore dependencies
+  3. Restore dependencies  
     `dotnet restore` 
 
-  4. Build the project 
+  4. Build the project   
     `dotnet build`
 
-  6. Run the applicaiotn
+  6. Run the application  
     `dotnet run`
 
-  # SubmissionProcesso.Worker
-  1. Navigate to the SubmissionProcesso.Worker folder
-    From the root of the project run:  
+  ### SubmissionProcesso.Worker
+  1. Navigate to the SubmissionProcesso.Worker folder    
+    From the root of the project run:   
     `cd SubmissionProcesso.Worker`
 
-  2. Set up .env files
-    Run the following command and enter appropriate values for all the environment variables
+  2. Set up .env files    
+    Run the following command and enter appropriate values for all the environment variables  
     `cp .env.example .env `
 
-  3. Restore dependencies
+  3. Restore dependencies  
     `dotnet restore` 
 
-  4. Build the project 
+  4. Build the project   
     `dotnet build`
 
-  5. Run database migrations
+  5. Run database migrations  
     `dotnet ef database update`
 
-  6. Run the applicaiotn
+  6. Run the application  
     `dotnet run`
 
 ## MySQL setup steps
 1. Get a database connection string
 
-2. Add Database connection string in the .env file of TraineeManagement.Api and SubmissionProcessor.Worker
+2. Add Database connection string in the .env file of TraineeManagement.Api and SubmissionProcessor.Worker  
   `ConnectionStrings__DefaultConnection=Your-Database-Connection-String`
 
-3. Run the following command in the root of the project dir to make sure there are no errors.
+3. Run the following command in the root of the project dir to make sure there are no errors.  
   `dotnet build`
 
-4. Run the following command in the root of the project dir to create tables in the database 
+4. Run the following command in the root of the project dir to create tables in the database   
   `dotnet ef database update -p Shared -s TraineeManagement.Api`
 
-Once ran successfully, the API and the database are in sync. We can test the connection by using swagger UI, try adding one entry using POST end point and see if it is shown in the datase or not.
+Once ran successfully, the API and the database are in sync. We can test the connection by using swagger UI, try adding one entry   using POST end point and see if it is shown in the datase or not.
 
 ## Redis setup steps
 1. Get a redis connection string and ensure your redis instance is up and running
 
-2. Add Redis connection string in the .env file of TraineeManagement.Api and SubmissionProcessor.Worker
+2. Add Redis connection string in the .env file of TraineeManagement.Api and SubmissionProcessor.Worker  
   `ConnectionStrings__Redis="Your-Redis-Connection-String"`
 
 ## Rabitmq setup
 1. Ensure a rabbitMQ instance is up and running
 
-2. Add RabbitMQ username in the .env file of TraineeManagement.Api and SubmissionProcessor.Worker
+2. Add RabbitMQ username in the .env file of TraineeManagement.Api and SubmissionProcessor.Worker  
   `dotnet user-secrets set "RabbitMQ:UserName" "Your_Username"`
 
-3. Add RabbitMQ password in the .env file of TraineeManagement.Api and SubmissionProcessor.Worker
+3. Add RabbitMQ password in the .env file of TraineeManagement.Api and SubmissionProcessor.Worker  
   `dotnet user-secrets set "RabbitMQ:Password" "your_password"`
 
 
